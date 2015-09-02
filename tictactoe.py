@@ -17,73 +17,49 @@ Tic Tac Toe
 Objects
 1. Game board - should be a list split into 3x3
 2. Players - give input
-
-Game Board
-1. Create 3x3 board
-2. Use a list to check for win/tie
-3. 'tl' = list[0], 'tm' = list[1], 'tr' = list[2], etc
-4. Check for 3 consecutive squares = 'x', board labelled above
-5. Create algorithm for checking after each turn (starting with 3rd turn)
-
-How do I store that a square has been played? How do I store those coordinates
-as being filled? Dictionary? Every time a square is filled, coords[(x, y)]='x'
-To test for the patterns I can just run a for loop through dictionary testing
-[x] and [y] coordinates for matches?
-
-coords = {
-    (0,0): 'x'
-    (0,1): 'x'
-    (0,2): 'o'
-    (1,0): 'x'  #match
-    (1,1): 'x'  #match
-    (1,2): 'x'  #match
-    (2,0):
-    (2,1):
-    (2,2):
-}
-
-3 in a row occurs at:
-    Horizontal: 012, 345, 678
-    Vertical: 036, 147, 258
-    \ Diagonal: 048
-    / Diagonal: 246
-
 '''
+import os
+from random import randint
+
 
 def createBoard():
     # create 9-cell board to play
-    board = [x for x in range(9)]
+    board = [' ' for x in range(9)]
+    return board
 
+
+def printBoard(board):
     # print board in 3x3 square
+    os.system('clear')
+
     for x in range(9):
         if x in [2, 5, 8]:
-            print(x, end='\n')
+            print(board[x], end='\n')
         else:
-            print(x, end='|')
+            print(board[x], end='|')
 
+
+def updateBoard(move, symbol, board):
+    '''
+    move: an integer from playerInput/compInput
+    symbol: a string char 'x' or 'o' depending on who's inputting
+    '''
+    board[move] = symbol
     return board
+
 
 def checkWin(board, player):
     '''
     Board: is the list defined in createBoard()
-    Player: string, is the character each player uses, i.e. 'x' or 'o'
+    Player: string, is the symbol each player uses, i.e. 'x' or 'o'
     '''
     # define winning coordinates
     win = {
-        (0, 1, 2),
-        (3, 4, 5),
-        (6, 7, 8),
-        (0, 3, 6),
-        (1, 4, 7),
-        (2, 5, 8),
-        (0, 4, 8),
-        (2, 4, 6)
+        (0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6),
+        (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)
     }
 
-    # for each possible win row, check to see if each index matches player
-    # if so, we have a winner
-    # if not, search each remaining row
-    # if still no winner, keep playing game
+    # for each possible win row, check if each index matches player tag 'x/o'
     winner = False
     for row in win:
         for index in row:
@@ -97,11 +73,50 @@ def checkWin(board, player):
     return winner
 
 
+def playerInput(board):
+    # Get player input, return as string
+    # Check to make sure input is valid and not already on board
+    while True:
+        try:
+            playerMove = int(input('Enter a # from 1-9: ')) - 1
+            if board[playerMove] == 'x' or board[playerMove] == 'o':
+                print('That spot is already taken. Please try again.')
+            else:
+                break
+        except ValueError:
+            print('Oops, not a valid number. Please try again.')
+
+    return updateBoard(playerMove, 'x', board)
 
 
-board = createBoard()
-board[6] = 'o'
-board[7] = 'o'
-board[8] = 'o'
+def compInput(board):
+    # Select random # for computer to play
+    compMove = randint(0, 8)
+    while board[compMove] == 'x' or board[compMove] == 'o':
+        compMove = randint(0, 8)
 
-print(checkWin(board, 'o'))
+    return updateBoard(compMove, 'o', board)
+
+
+if __name__ == '__main__':
+    print('--------Tic Tac Toe--------')
+    print('Cells are numbered 1-9 starting\nwith the top left corner.')
+    
+    board = createBoard()
+    printBoard(board)
+
+    win = False
+    while not win:
+        board = playerInput(board)
+        printBoard(board)
+        win = checkWin(board, 'x')
+        if win:
+            print('Player 1 wins!')
+            break
+
+        board = compInput(board)
+        printBoard(board)
+        win = checkWin(board, 'o')
+        if win:
+            print('Player 2 wins!')
+            break
