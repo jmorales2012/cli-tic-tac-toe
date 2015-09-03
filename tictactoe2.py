@@ -128,8 +128,7 @@ if __name__ == '__main__':
     player1 = Player('Jim')
     player2 = Player('Bob')
 
-    playing = True
-    while playing:
+    while True:
 
         player1.make_move(game)
         if player1.winner:
