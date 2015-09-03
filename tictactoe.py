@@ -85,6 +85,8 @@ def playerInput(board):
                 break
         except ValueError:
             print('Oops, not a valid number. Please try again.')
+        except IndexError:
+            print('Oops, number out of range. Please try again')
 
     return updateBoard(playerMove, 'x', board)
 
@@ -101,7 +103,7 @@ def compInput(board):
 if __name__ == '__main__':
     print('--------Tic Tac Toe--------')
     print('Cells are numbered 1-9 starting\nwith the top left corner.')
-    
+
     board = createBoard()
     printBoard(board)
 

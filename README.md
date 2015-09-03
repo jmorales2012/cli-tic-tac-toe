@@ -1,2 +1,2 @@
 # tic-tac-toe
-Tic-tac-toe on the command line!
+Tic-Tac-Toe on the command line!
