@@ -26,9 +26,6 @@ class Board():
             else:
                 print(self.board[x], end='|')
 
-    def __str__(self):
-        return 'I am a Tic Tac Toe board! Let\'s play!'
-
     def update(self, move, symbol):
         '''
         Updates board with current move. Also checks if winner was found.
@@ -128,8 +125,8 @@ if __name__ == '__main__':
 
     game = Board()
     game.print_board()
-    player1 = Player('Josh')
-    player2 = Player('Caryn')
+    player1 = Player('Jim')
+    player2 = Player('Bob')
 
     playing = True
     while playing:
