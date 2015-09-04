@@ -1,11 +1,11 @@
 """Remake tictactoe.py using Classes/Methods"""
-import os
-import random
+import os, random
 
+# global variable for centered
+centered = '{:^80}'
 
 class Board():
-    """
-    Defines playing board in Tic Tac Toe game.
+    """Defines playing board in Tic Tac Toe game.
 
     Board() is the class that displays our game, accepts moves, and checks
     for winning conditions. Player() makes moves on Board() until a winner
@@ -20,15 +20,11 @@ class Board():
         self.board = [' '] * 9
 
     def print_board(self):
-        """Print game board in 3x3 layout centered on screen."""
-        copy = self.board[:]
+        """Print game board in 3x3 layout."""
+        os.system('clear')
         print('\n')
-        for x in range(9):
-            if (x+1) % 3 == 0:
-                print(copy[x], end='\n')
-            else:
-
-                print(copy[x], end='|')
+        for x in range(0, 9, 3):
+            print(centered.format('|'.join(self.board[x:x+3])))
 
     def update(self, move, symbol):
         """Update board with player move."""
@@ -81,6 +77,7 @@ class Board():
                 break
             elif self.board[x] != ' ':
                 tie = True
+
         return tie
 
 
@@ -232,9 +229,10 @@ class Computer(Player):
 
 
 if __name__ == '__main__':
+    os.system('clear')
     print('\n')
-    print('{:^80}'.format('----------Tic Tac Toe----------'), end='\n\n')
-    print('{:^80}'.format('Cells are numbered 1-9 starting'))
+    print('{:^80}'.format('-----------Tic Tac Toe-----------'), end='\n\n')
+    print('{:^80}'.format('Squares are numbered 1-9 starting'))
     print('{:^80}'.format('with the top left corner.'))
 
     """
@@ -251,25 +249,28 @@ if __name__ == '__main__':
 
     game = Board()
     game.print_board()
-    player1 = Computer('Josh')
+    player1 = Human('Josh')
     player2 = Computer('CPU')
-    player1.set_symbol(player2)
+    player1.set_symbol()
     player2.set_symbol(player1)
 
     while True:
 
-        player1.make_move(game, player2)
+        player1.make_move(game)
         if player1.winner:
-            print('\nCongrats to {0} on winning!\n'.format(player1.name))
+            print('\n' + '{:^80}'.format(
+                'Congrats to %s on winning!\n') % (player1.name))
             break
         elif player1.tie and not player1.winner:
-            print('\nTie game. Better luck next time.\n'.format(player1.name))
+            print('\n' + '{:^80}'.format(
+                'Tie. Better luck next time %s.\n') % (player1.name))
             break
 
         player2.make_move(game, player1)
         if player2.winner:
-            print('\nCongrats to {0} on winning!\n'.format(player2.name))
+            print('\n' + '{:^80}'.format(
+                'Congrats to {0} on winning!\n') % (player2.name))
             break
         elif player2.tie and not player2.winner:
-            print('\nTie game.\n')
+            print('\n' + '{:^80}'.format('Tie game.\n'))
             break
