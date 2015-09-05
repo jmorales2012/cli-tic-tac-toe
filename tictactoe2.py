@@ -1,4 +1,3 @@
-"""Remake tictactoe.py using Classes/Methods"""
 import os
 import random
 
