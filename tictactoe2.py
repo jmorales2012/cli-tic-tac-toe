@@ -1,8 +1,7 @@
 """Remake tictactoe.py using Classes/Methods"""
-import os, random
+import os
+import random
 
-# global variable for centered
-centered = '{:^80}'
 
 class Board():
     """Defines playing board in Tic Tac Toe game.
@@ -21,10 +20,18 @@ class Board():
 
     def print_board(self):
         """Print game board in 3x3 layout."""
-        os.system('clear')
+        self.instructions()
         print('\n')
         for x in range(0, 9, 3):
-            print(centered.format('|'.join(self.board[x:x+3])))
+            print('{:^80}'.format('|'.join(self.board[x:x+3])))
+
+    def instructions(self):
+        """Prints instructions to screen above board every move."""
+        os.system('clear')
+        print('\n')
+        print('{:^80}'.format('-----------Tic Tac Toe-----------'), end='\n\n')
+        print('{:^80}'.format('Squares are numbered 1-9 starting'))
+        print('{:^80}'.format('with the top left corner.'))
 
     def update(self, move, symbol):
         """Update board with player move."""
@@ -113,12 +120,18 @@ class Human(Player):
         symbol: Can be any 1-digit character. Used to fill in squares on board.
     """
 
-    def set_symbol(self):
-        self.symbol = input('\n{0}, enter your desired symbol: '.format(
+    def set_symbol(self, otherPlayer=0):
+        """If this is 2nd player, want to make sure symbols don't match."""
+        self.symbol = input('{0}, enter your desired symbol: '.format(
             self.name))
 
+        if otherPlayer:
+            while self.symbol == otherPlayer.symbol:
+                self.symbol = input(
+                    'Your symbol can\'t match player 1\'s symbol: ')
+
         while len(self.symbol) != 1:
-            self.symbol = input('\nYour symbol must be 1 character long: ')
+            self.symbol = input('Your symbol must be 1 character long: ')
 
     def make_move(self, board):
         """Asks for user input to make next move. Update & print board.
@@ -136,13 +149,13 @@ class Human(Player):
                 move = int(input('\n{0}, enter a # from 1-9: '.format(
                     self.name))) - 1
                 if board.board[move] != ' ':
-                    print('\nThat spot is already taken. Please try again.')
+                    print('That spot is already taken. Please try again.')
                 else:
                     break
             except ValueError:
-                print('\nOops, not a valid number. Please try again.')
+                print('Not a valid number. Please try again.')
             except IndexError:
-                print('\nOops, number out of range. Please try again.')
+                print('Number out of range. Please try again.')
 
         board.update(move, self.symbol)
         board.print_board()
@@ -159,10 +172,12 @@ class Computer(Player):
         symbol: Default to 'O' unless already used by other player.
     """
 
-    def set_symbol(self, otherPlayer):
+    def set_symbol(self, otherPlayer=0):
+        """If another player exists, make sure symbols don't match."""
         self.symbol = 'X'
-        if self.symbol == otherPlayer.symbol:
-            self.symbol = 'O'
+        if otherPlayer:
+            if self.symbol == otherPlayer.symbol:
+                self.symbol = 'O'
 
     def get_move(self, board, otherPlayer):
         """Determine computer move based on AI strategy.
@@ -228,35 +243,109 @@ class Computer(Player):
         self.tie = board.check_tie()
 
 
-if __name__ == '__main__':
-    os.system('clear')
-    print('\n')
-    print('{:^80}'.format('-----------Tic Tac Toe-----------'), end='\n\n')
-    print('{:^80}'.format('Squares are numbered 1-9 starting'))
-    print('{:^80}'.format('with the top left corner.'))
+def playMenu():
+    """Asks user if they want to play game. Calls makeChoice() for input.
 
+    Returns:
+        Returns an integer (1 or 2) based on user input from makeChoice().
+        1 means yes they want to play
+        2 means no they don't want to play
+    """
+
+    print('\nDo you wan\'t to play Tic Tac Toe?', end='\n')
+    print('\n1. Enter 1 to Play')
+    print('2. Enter 2 to Exit', end='\n')
+
+    return makeChoice()
+
+
+def playerSelection(player):
+    """Asks user if that specific player is a human or computer.
+
+    Returns:
+        Returns 1 or 2 based on user input from makeChoice().
+        1 means that this player is a Human()
+        2 means that this player is a Computer()
+    """
+    print('\nIs player {} a human or computer?'.format(player))
+    print('1. Enter 1 if Human')
+    print('2. Enter 2 if Computer')
+
+    return makeChoice()
+
+
+def makeChoice():
+    choice = input('\nEnter your choice: ')
+
+    while choice not in ['1', '2']:
+        choice = input('Oops, invalid choice. Try again: ')
+
+    return int(choice)
+
+
+def createPlayer(playerChoice, otherPlayer=0):
+    """Create a Player() class depending on user's input.
+
+    Args:
+        playerChoice: Will be 1 or 2 depending if user selected Human/Computer
+        otherPlayer: Used to make sure the symbols don't match
+
+    Returns:
+        Returns either a Human() or Computer() class with their name and
+        symbol set for the game.
+    """
+    # create Human() player
+    if playerChoice == 1:
+        name = input('Enter your name: ')
+        player = Human(name)
+        player.set_symbol(otherPlayer)
+
+    # create Computer() player
+    elif playerChoice == 2:
+        name = input('Enter computer\'s name: ')
+        player = Computer(name)
+        player.set_symbol(otherPlayer)
+
+    return player
+
+
+if __name__ == '__main__':
     """
     1. Intro Screen
     2. Ask to play game
     3. Asks if player1 is human or computer
     4. Ask for name of player1
-        1. If player1 is human, ask for symbol
+        1. If player1 is human, ask for name & symbol
     5. Asks if player2 is human or computer
     6. Asks for name of player2
-        1. If player2 is human, ask for symbol
+        1. If player2 is human, ask for name & symbol
     7. Start game
     """
 
-    game = Board()
-    game.print_board()
-    player1 = Human('Josh')
-    player2 = Computer('CPU')
-    player1.set_symbol()
-    player2.set_symbol(player1)
+    playing = True
+    # allows user to decide if they want to play game or not
+    playGame = playMenu()
 
-    while True:
+    if playGame == 1:
+        # create players 1 and 2 depending on choice to be human/computer
+        player1 = createPlayer(playerSelection(1))
+        player2 = createPlayer(playerSelection(2), player1)
+        # create game to play
+        game = Board()
+        game.print_board()
 
-        player1.make_move(game)
+    elif playGame == 2:
+        print('{:^80}'.format('See you next time!'))
+        playing = False
+
+    while playing:
+
+        # if the player is a Computer, they pass different args then Human
+        if isinstance(player1, Computer):
+            player1.make_move(game, player2)
+        else:
+            player1.make_move(game)
+
         if player1.winner:
             print('\n' + '{:^80}'.format(
                 'Congrats to %s on winning!\n') % (player1.name))
@@ -266,7 +355,12 @@ if __name__ == '__main__':
                 'Tie. Better luck next time %s.\n') % (player1.name))
             break
 
-        player2.make_move(game, player1)
+        # same as above, determining if player is a computer
+        if isinstance(player2, Computer):
+            player2.make_move(game, player1)
+        else:
+            player2.make_move(game)
+
         if player2.winner:
             print('\n' + '{:^80}'.format(
                 'Congrats to {0} on winning!\n') % (player2.name))
